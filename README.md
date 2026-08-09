@@ -1,6 +1,9 @@
 # gb CLI distributions
 
-Public, read-only release artifacts for the native `gb` game backend CLI.
+Public, read-only release artifacts and documentation for the native `gb` game backend CLI.
+
+- **Documentation:** https://locus84.github.io/gb-cli-distributions/
+- **Releases:** https://github.com/locus84/gb-cli-distributions/releases
 
 Install the latest release without GitHub or backend credentials:
 
@@ -8,4 +11,4 @@ Install the latest release without GitHub or backend credentials:
 curl -fsSL https://github.com/locus84/gb-cli-distributions/releases/latest/download/install.sh | sh
 ```
 
-Each release contains native macOS/Linux binaries and `checksums.txt`. Source code, issues, and backend releases remain in the private source repository. Artifacts are published only by its release workflow.
+Each release contains native macOS/Linux binaries, `checksums.txt`, and the install script. Source code, issues, and private operational evidence remain in the private source repository. Artifacts and allowlisted public documentation are published only by its release workflow.

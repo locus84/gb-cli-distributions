@@ -1,0 +1,54 @@
+site_name: gb game backend
+site_description: Public gb CLI and managed multiplayer integration documentation
+site_url: https://locus84.github.io/gb-cli-distributions/
+repo_url: https://github.com/locus84/gb-cli-distributions
+repo_name: locus84/gb-cli-distributions
+docs_dir: docs
+strict: true
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+nav:
+  - Overview: index.md
+  - CLI installation: cli-installation.md
+  - Managed multiplayer:
+      - Architecture: managed-multiplayer.md
+      - Gameye + Photon Fusion: gameye-fusion.md
+      - Lifecycle and troubleshooting: lifecycle-troubleshooting.md
+      - Security boundaries: security.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+plugins:
+  - search
