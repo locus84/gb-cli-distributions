@@ -1,0 +1,43 @@
+{
+  "input": {
+    "passId": "season_1",
+    "reason": "quest:daily_kill_10",
+    "xpBefore": 90,
+    "xpGained": 75,
+    "levels": [
+      {
+        "level": 1,
+        "requiredXp": 0
+      },
+      {
+        "level": 2,
+        "requiredXp": 100
+      },
+      {
+        "level": 3,
+        "requiredXp": 200
+      }
+    ]
+  },
+  "userId": "usr_fixture",
+  "now": "2026-05-27T00:00:00.000Z",
+  "expect": {
+    "result": {
+      "ok": true,
+      "passId": "season_1",
+      "xpBefore": 90,
+      "xpGained": 75,
+      "totalXp": 165,
+      "previousLevel": 1,
+      "currentLevel": 2,
+      "levelsGained": 1
+    },
+    "ops": [
+      {
+        "service": "documents",
+        "method": "putAuthoritative"
+      }
+    ],
+    "opCount": 1
+  }
+}

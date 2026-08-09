@@ -1,0 +1,50 @@
+{
+  "input": {
+    "itemInstanceId": "sword_001",
+    "upgradeId": "iron_sword_plus_2",
+    "levelBefore": 1,
+    "expectedVersion": 2,
+    "maxLevel": 5,
+    "successRate": 0.7,
+    "random": 0.42,
+    "resultItemId": "iron_sword_plus_2",
+    "materials": [
+      {
+        "id": "iron_ore",
+        "quantity": 5
+      }
+    ],
+    "currencyCost": {
+      "currencyId": "gold",
+      "amount": 250
+    },
+    "failureCompensation": {
+      "currencyId": "upgrade_dust",
+      "amount": 1
+    }
+  },
+  "userId": "usr_fixture",
+  "now": "2026-05-27T00:00:00.000Z",
+  "expect": {
+    "result": {
+      "ok": true,
+      "itemInstanceId": "sword_001",
+      "upgradeId": "iron_sword_plus_2",
+      "levelBefore": 1,
+      "levelAfter": 2,
+      "success": true,
+      "queuedRewards": 1
+    },
+    "ops": [
+      {
+        "service": "economy",
+        "method": "transaction"
+      },
+      {
+        "service": "documents",
+        "method": "putAuthoritative"
+      }
+    ],
+    "opCount": 2
+  }
+}

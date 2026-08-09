@@ -1,0 +1,73 @@
+{
+  "input": {
+    "bannerId": "starter",
+    "random": 0.95,
+    "pityBefore": 0,
+    "pityThreshold": 10,
+    "entries": [
+      {
+        "id": "coins",
+        "rarity": "common",
+        "weight": 90,
+        "rewards": [
+          {
+            "type": "currency",
+            "id": "gold",
+            "amount": 50
+          }
+        ]
+      },
+      {
+        "id": "rare_sword",
+        "rarity": "rare",
+        "weight": 10,
+        "resetsPity": true,
+        "rewards": [
+          {
+            "type": "item",
+            "id": "iron_sword",
+            "quantity": 1,
+            "data": {
+              "rarity": "rare",
+              "affixes": [
+                { "id": "fire_damage", "value": 5 },
+                { "id": "crit_rate", "value": 3 }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "userId": "usr_fixture",
+  "now": "2026-05-27T00:00:00.000Z",
+  "expect": {
+    "result": {
+      "ok": true,
+      "bannerId": "starter",
+      "queuedRewards": 1,
+      "selected": {
+        "entryId": "rare_sword",
+        "rarity": "rare",
+        "duplicate": false,
+        "guaranteed": false,
+        "pityAfter": 0
+      }
+    },
+    "ops": [
+      {
+        "service": "economy",
+        "method": "transaction"
+      },
+      {
+        "service": "events",
+        "method": "track"
+      },
+      {
+        "service": "documents",
+        "method": "putAuthoritative"
+      }
+    ],
+    "opCount": 3
+  }
+}

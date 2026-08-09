@@ -1,0 +1,48 @@
+{
+  "input": {
+    "shopId": "spring_festival",
+    "sku": "lucky_box",
+    "schedule": {
+      "startsAt": "2026-05-01T00:00:00.000Z",
+      "endsAt": "2026-06-01T00:00:00.000Z"
+    },
+    "purchased": 1,
+    "purchase": {
+      "limit": 3,
+      "price": {
+        "currencyId": "event_coin",
+        "amount": 100
+      },
+      "rewards": [
+        {
+          "type": "item",
+          "id": "lucky_box",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  "userId": "usr_fixture",
+  "now": "2026-05-27T00:00:00.000Z",
+  "expect": {
+    "result": {
+      "ok": true,
+      "shopId": "spring_festival",
+      "sku": "lucky_box",
+      "purchased": 2,
+      "limit": 3,
+      "queuedRewards": 1
+    },
+    "ops": [
+      {
+        "service": "economy",
+        "method": "transaction"
+      },
+      {
+        "service": "documents",
+        "method": "putAuthoritative"
+      }
+    ],
+    "opCount": 2
+  }
+}

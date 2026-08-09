@@ -1,0 +1,51 @@
+{
+  "input": {
+    "recipe": {
+      "id": "iron_sword",
+      "materials": [
+        {
+          "id": "iron_ore",
+          "quantity": 3
+        },
+        {
+          "id": "wood",
+          "quantity": 1
+        }
+      ],
+      "result": {
+        "itemId": "iron_sword",
+        "quantity": 1
+      },
+      "currencyCost": {
+        "currencyId": "gold",
+        "amount": 50
+      }
+    },
+    "inventory": {
+      "iron_ore": 5,
+      "wood": 2
+    }
+  },
+  "userId": "usr_fixture",
+  "now": "2026-05-27T00:00:00.000Z",
+  "expect": {
+    "result": {
+      "ok": true,
+      "recipeId": "iron_sword",
+      "itemId": "iron_sword",
+      "quantity": 1,
+      "queuedRewards": 1
+    },
+    "ops": [
+      {
+        "service": "economy",
+        "method": "transaction"
+      },
+      {
+        "service": "documents",
+        "method": "putAuthoritative"
+      }
+    ],
+    "opCount": 2
+  }
+}

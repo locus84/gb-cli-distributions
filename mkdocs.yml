@@ -31,6 +31,8 @@ theme:
 nav:
   - Overview: index.md
   - CLI installation: cli-installation.md
+  - Cloud Code:
+      - Samples and workflow: cloudcode-samples.md
   - Managed multiplayer:
       - Architecture: managed-multiplayer.md
       - Gameye + Photon Fusion: gameye-fusion.md

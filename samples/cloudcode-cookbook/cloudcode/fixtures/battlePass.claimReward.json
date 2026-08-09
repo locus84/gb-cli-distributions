@@ -1,0 +1,53 @@
+{
+  "input": {
+    "passId": "season_1",
+    "track": "premium",
+    "premiumOwned": true,
+    "level": 2,
+    "currentLevel": 3,
+    "claimedRewardKeys": ["season_1:free:1"],
+    "rewardsByTrack": {
+      "free": {
+        "2": [
+          {
+            "type": "currency",
+            "id": "gold",
+            "amount": 100
+          }
+        ]
+      },
+      "premium": {
+        "2": [
+          {
+            "type": "item",
+            "id": "premium_chest",
+            "quantity": 1
+          }
+        ]
+      }
+    }
+  },
+  "userId": "usr_fixture",
+  "now": "2026-05-27T00:00:00.000Z",
+  "expect": {
+    "result": {
+      "ok": true,
+      "passId": "season_1",
+      "track": "premium",
+      "level": 2,
+      "claimKey": "season_1:premium:2",
+      "queuedRewards": 1
+    },
+    "ops": [
+      {
+        "service": "economy",
+        "method": "grantItem"
+      },
+      {
+        "service": "documents",
+        "method": "putAuthoritative"
+      }
+    ],
+    "opCount": 2
+  }
+}

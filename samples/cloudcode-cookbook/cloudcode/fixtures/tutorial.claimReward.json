@@ -1,0 +1,37 @@
+{
+  "input": {
+    "tutorialId": "first_session",
+    "stepId": "open_shop",
+    "completedSteps": ["move", "open_shop"],
+    "claimedSteps": ["move"],
+    "rewards": [
+      {
+        "type": "currency",
+        "id": "gems",
+        "amount": 5
+      }
+    ]
+  },
+  "userId": "usr_fixture",
+  "now": "2026-05-27T00:00:00.000Z",
+  "expect": {
+    "result": {
+      "ok": true,
+      "tutorialId": "first_session",
+      "stepId": "open_shop",
+      "claimKey": "first_session:open_shop",
+      "queuedRewards": 1
+    },
+    "ops": [
+      {
+        "service": "economy",
+        "method": "addCurrency"
+      },
+      {
+        "service": "documents",
+        "method": "putAuthoritative"
+      }
+    ],
+    "opCount": 2
+  }
+}

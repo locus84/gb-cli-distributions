@@ -1,0 +1,54 @@
+{
+  "input": {
+    "calendarId": "starter_login",
+    "claimDay": "2026-05-27",
+    "claimedDays": ["2026-05-26"],
+    "streakBefore": 1,
+    "dayIndex": 2,
+    "calendar": [
+      {
+        "day": 1,
+        "rewards": [
+          {
+            "type": "currency",
+            "id": "gold",
+            "amount": 50
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "rewards": [
+          {
+            "type": "item",
+            "id": "energy_cell",
+            "quantity": 1
+          }
+        ]
+      }
+    ]
+  },
+  "userId": "usr_fixture",
+  "now": "2026-05-27T00:00:00.000Z",
+  "expect": {
+    "result": {
+      "ok": true,
+      "calendarId": "starter_login",
+      "claimDay": "2026-05-27",
+      "dayIndex": 2,
+      "streak": 2,
+      "queuedRewards": 1
+    },
+    "ops": [
+      {
+        "service": "economy",
+        "method": "grantItem"
+      },
+      {
+        "service": "documents",
+        "method": "putAuthoritative"
+      }
+    ],
+    "opCount": 2
+  }
+}

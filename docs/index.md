@@ -17,6 +17,13 @@ gb help
 
 Native macOS and Linux binaries, checksums, and the install script are published in the [public release repository](https://github.com/locus84/gb-cli-distributions/releases).
 
+## Cloud Code cookbook
+
+The public repository includes ten executable gameplay recipes with least-privilege manifests and assertion fixtures. Start with the local workflow, inspect queued operations, then adapt every client-supplied rule to authoritative game state before production use.
+
+- [Cloud Code samples and workflow](cloudcode-samples.md)
+- [Browse the downloadable cookbook](https://github.com/locus84/gb-cli-distributions/tree/main/samples/cloudcode-cookbook)
+
 ## Managed multiplayer at a glance
 
 ```mermaid
@@ -46,6 +53,7 @@ The Backend remains authoritative for Ticket ownership, Match roster, Session li
 
 ## Start here
 
+- [Cloud Code samples and workflow](cloudcode-samples.md)
 - [Managed multiplayer architecture](managed-multiplayer.md)
 - [Gameye + Photon Fusion integration](gameye-fusion.md)
 - [Lifecycle and troubleshooting](lifecycle-troubleshooting.md)

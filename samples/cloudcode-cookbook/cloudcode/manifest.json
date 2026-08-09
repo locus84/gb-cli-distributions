@@ -1,0 +1,241 @@
+{
+  "modules": [
+    {
+      "name": "quest.progress",
+      "version": 1,
+      "file": "quest.progress.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "documents.writeAuthoritative",
+          "economy.addCurrency",
+          "economy.grantItem"
+        ]
+      },
+      "metadata": {
+        "displayName": "Quest Progress Recipe",
+        "description": "Increment quest progress, persist player-readable state, and queue a completion reward.",
+        "timeoutMs": 1000
+      }
+    },
+    {
+      "name": "idle.claimOffline",
+      "version": 1,
+      "file": "idle.claimOffline.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "documents.writeAuthoritative",
+          "economy.addCurrency"
+        ]
+      },
+      "metadata": {
+        "displayName": "Idle Offline Claim Recipe",
+        "description": "Compute capped offline income with multipliers, queue currency, and persist claim state.",
+        "timeoutMs": 1000
+      }
+    },
+    {
+      "name": "gacha.roll",
+      "version": 1,
+      "file": "gacha.roll.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "documents.writeAuthoritative",
+          "events.track",
+          "economy.transaction"
+        ]
+      },
+      "metadata": {
+        "displayName": "Gacha Roll Recipe",
+        "description": "Deterministic weighted roll with pity and duplicate conversion patterns.",
+        "timeoutMs": 1000
+      }
+    },
+    {
+      "name": "crafting.craftItem",
+      "version": 1,
+      "file": "crafting.craftItem.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "documents.writeAuthoritative",
+          "economy.transaction"
+        ]
+      },
+      "metadata": {
+        "displayName": "Crafting Recipe",
+        "description": "Validate recipe materials from input, queue crafted item grant, and write a craft record.",
+        "timeoutMs": 1000
+      }
+    },
+    {
+      "name": "eventShop.purchase",
+      "version": 1,
+      "file": "eventShop.purchase.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "documents.writeAuthoritative",
+          "economy.addCurrency",
+          "economy.grantItem",
+          "economy.transaction"
+        ]
+      },
+      "metadata": {
+        "displayName": "Event Shop Purchase Recipe",
+        "description": "Validate schedule window and purchase limits, queue rewards, and write purchase counter state.",
+        "timeoutMs": 1000
+      }
+    },
+    {
+      "name": "attendance.claimDaily",
+      "version": 1,
+      "file": "attendance.claimDaily.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "documents.writeAuthoritative",
+          "economy.addCurrency",
+          "economy.grantItem"
+        ]
+      },
+      "metadata": {
+        "displayName": "Attendance Daily Claim Recipe",
+        "description": "Validate a calendar day claim, queue the day reward, and write attendance streak state.",
+        "timeoutMs": 1000
+      }
+    },
+    {
+      "name": "battlePass.addXp",
+      "version": 1,
+      "file": "battlePass.addXp.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "documents.writeAuthoritative"
+        ]
+      },
+      "metadata": {
+        "displayName": "Battle Pass Add XP Recipe",
+        "description": "Add pass XP, compute level changes, and write battle-pass progress state.",
+        "timeoutMs": 1000
+      }
+    },
+    {
+      "name": "battlePass.claimReward",
+      "version": 1,
+      "file": "battlePass.claimReward.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "documents.writeAuthoritative",
+          "economy.addCurrency",
+          "economy.grantItem"
+        ]
+      },
+      "metadata": {
+        "displayName": "Battle Pass Claim Reward Recipe",
+        "description": "Validate free/premium track reward claims, queue rewards, and write claim state.",
+        "timeoutMs": 1000
+      }
+    },
+    {
+      "name": "upgrade.enhanceItem",
+      "version": 1,
+      "file": "upgrade.enhanceItem.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "documents.writeAuthoritative",
+          "economy.addCurrency",
+          "economy.transaction"
+        ]
+      },
+      "metadata": {
+        "displayName": "Upgrade Enhancement Recipe",
+        "description": "Run a deterministic enhance roll, queue success/compensation rewards, and write upgrade state.",
+        "timeoutMs": 1000
+      }
+    },
+    {
+      "name": "tutorial.claimReward",
+      "version": 1,
+      "file": "tutorial.claimReward.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "documents.writeAuthoritative",
+          "economy.addCurrency",
+          "economy.grantItem"
+        ]
+      },
+      "metadata": {
+        "displayName": "Tutorial Reward Claim Recipe",
+        "description": "Validate one-time tutorial step rewards, queue grants, and write tutorial claim state.",
+        "timeoutMs": 1000
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "input": {
+    "stateId": "main",
+    "currencyId": "gold",
+    "lastSeenAt": "2026-05-27T00:00:00.000Z",
+    "ratePerSecond": 1,
+    "capSeconds": 3600,
+    "multipliers": {
+      "ad": 2,
+      "vip": 1.5
+    }
+  },
+  "userId": "usr_fixture",
+  "now": "2026-05-27T02:00:00.000Z",
+  "expect": {
+    "result": {
+      "ok": true,
+      "stateId": "main",
+      "currencyId": "gold",
+      "elapsedSeconds": 7200,
+      "creditedSeconds": 3600,
+      "multiplier": 3,
+      "amount": 10800
+    },
+    "ops": [
+      {
+        "service": "economy",
+        "method": "addCurrency"
+      },
+      {
+        "service": "documents",
+        "method": "putAuthoritative"
+      }
+    ],
+    "opCount": 2
+  }
+}
