@@ -15,7 +15,15 @@ gb version
 gb help
 ```
 
-Native macOS and Linux binaries, checksums, and the install script are published in the [public release repository](https://github.com/locus84/gb-cli-distributions/releases).
+Native macOS and Linux binaries, Unity and TypeScript SDK packages, checksums, and the install script are published in the [public release repository](https://github.com/locus84/gb-cli-distributions/releases).
+
+## Build a game project
+
+1. [Create project context and separate operator/player authentication](project-setup.md).
+2. Apply the [Game Data and LiveOps starter](game-data-liveops.md).
+3. Integrate the [Unity SDK](unity-sdk.md) or [TypeScript SDK](typescript-sdk.md).
+4. Add game-specific authoritative logic from the [Cloud Code cookbook](cloudcode-samples.md).
+5. Add [managed multiplayer](managed-multiplayer.md) when the game needs allocated dedicated servers.
 
 ## Cloud Code cookbook
 
@@ -53,6 +61,10 @@ The Backend remains authoritative for Ticket ownership, Match roster, Session li
 
 ## Start here
 
+- [Project and authentication setup](project-setup.md)
+- [Unity SDK quickstart](unity-sdk.md)
+- [TypeScript SDK quickstart](typescript-sdk.md)
+- [Game Data and LiveOps](game-data-liveops.md)
 - [Cloud Code samples and workflow](cloudcode-samples.md)
 - [Managed multiplayer architecture](managed-multiplayer.md)
 - [Gameye + Photon Fusion integration](gameye-fusion.md)

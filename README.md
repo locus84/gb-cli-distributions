@@ -11,4 +11,4 @@ Install the latest release without GitHub or backend credentials:
 curl -fsSL https://github.com/locus84/gb-cli-distributions/releases/latest/download/install.sh | sh
 ```
 
-Each release contains native macOS/Linux binaries, `checksums.txt`, and the install script. The repository also publishes an executable [Cloud Code cookbook](samples/cloudcode-cookbook/) with manifests and fixture tests. Backend source code, issues, and private operational evidence remain in the private source repository. Artifacts, samples, and allowlisted public documentation are published only by its release workflow.
+Each release contains native macOS/Linux CLI binaries, installable Unity and TypeScript SDK tarballs, `checksums.txt`, and the install script. The repository also publishes a [game-project starter](samples/game-project-starter/) and executable [Cloud Code cookbook](samples/cloudcode-cookbook/). Backend source code, issues, and private operational evidence remain in the private source repository. Artifacts, samples, and allowlisted public documentation are published only by its release workflow.

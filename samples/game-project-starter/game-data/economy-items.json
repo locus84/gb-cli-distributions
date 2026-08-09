@@ -1,0 +1,23 @@
+[
+  {
+    "id": "energy_cell",
+    "name": "Energy Cell",
+    "type": "consumable",
+    "stackable": true,
+    "enabled": true
+  },
+  {
+    "id": "starter_chest",
+    "name": "Starter Chest",
+    "type": "chest",
+    "stackable": true,
+    "enabled": true
+  },
+  {
+    "id": "hero_shard",
+    "name": "Hero Shard",
+    "type": "material",
+    "stackable": true,
+    "enabled": true
+  }
+]

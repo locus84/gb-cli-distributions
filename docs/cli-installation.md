@@ -12,6 +12,8 @@ The public distribution release contains:
 - `gb-darwin-x64`
 - `gb-linux-arm64`
 - `gb-linux-x64`
+- `gamebackend-unity-sdk.tgz`
+- `gamebackend-typescript-sdk.tgz`
 - `checksums.txt`
 - `install.sh`
 

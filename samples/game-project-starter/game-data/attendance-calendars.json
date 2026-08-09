@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Starter Login Calendar",
+    "cycleDays": 7,
+    "rewards": [
+      { "currencies": [{ "id": "gold", "amount": 25 }] },
+      { "currencies": [{ "id": "gold", "amount": 50 }] },
+      { "items": [{ "id": "energy_cell", "quantity": 1 }] },
+      { "currencies": [{ "id": "gems", "amount": 1 }] },
+      { "currencies": [{ "id": "gold", "amount": 75 }] },
+      { "items": [{ "id": "hero_shard", "quantity": 2 }] },
+      { "currencies": [{ "id": "gems", "amount": 3 }], "items": [{ "id": "starter_chest", "quantity": 1 }] }
+    ],
+    "enabled": true
+  }
+]

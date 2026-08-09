@@ -1,0 +1,17 @@
+[
+  {
+    "kind": "create",
+    "policy": {
+      "dailyLimit": 1,
+      "oneGuildPerPlayer": true,
+      "profanityCheck": true
+    }
+  },
+  {
+    "kind": "join",
+    "policy": {
+      "cooldownSeconds": 60,
+      "oneGuildPerPlayer": true
+    }
+  }
+]

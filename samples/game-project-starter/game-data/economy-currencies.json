@@ -1,0 +1,23 @@
+[
+  {
+    "id": "gold",
+    "name": "Gold",
+    "premium": false,
+    "enabled": true
+  },
+  {
+    "id": "gems",
+    "name": "Gems",
+    "premium": true,
+    "enabled": true
+  },
+  {
+    "id": "energy",
+    "name": "Energy",
+    "premium": false,
+    "enabled": true,
+    "refillAmount": 1,
+    "refillIntervalSeconds": 300,
+    "refillCap": 30
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "resources": {
+    "gameData": "game-data",
+    "cloudcode": false
+  },
+  "managed": {
+    "gameData": true,
+    "cloudcode": false
+  }
+}

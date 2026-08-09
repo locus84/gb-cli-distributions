@@ -1,0 +1,23 @@
+[
+  {
+    "id": "buy_starter_chest",
+    "clientCallable": true,
+    "spend": {
+      "currencies": [
+        {
+          "currencyId": "gold",
+          "amount": 100
+        }
+      ]
+    },
+    "grant": {
+      "items": [
+        {
+          "itemId": "starter_chest",
+          "quantity": 1
+        }
+      ]
+    },
+    "reason": "shop:starter_chest"
+  }
+]

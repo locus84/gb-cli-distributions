@@ -1,0 +1,24 @@
+[
+  {
+    "type": "notice",
+    "title": "Welcome to the vertical slice",
+    "body": "Seeded notice: login, sync config, roll starter_drop, submit idle_score, and try chat/realtime.",
+    "startsAt": "2026-01-01T00:00:00.000Z",
+    "enabled": true,
+    "payload": {
+      "seed": "vertical-slice"
+    }
+  },
+  {
+    "type": "event",
+    "title": "Idle Boost Weekend",
+    "body": "Fake live event for Unity harness testing.",
+    "startsAt": "2026-01-01T00:00:00.000Z",
+    "endsAt": "2027-01-01T00:00:00.000Z",
+    "enabled": true,
+    "payload": {
+      "boostMultiplier": 2,
+      "seed": "vertical-slice"
+    }
+  }
+]

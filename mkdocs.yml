@@ -30,9 +30,15 @@ theme:
 
 nav:
   - Overview: index.md
-  - CLI installation: cli-installation.md
-  - Cloud Code:
-      - Samples and workflow: cloudcode-samples.md
+  - Getting started:
+      - CLI installation: cli-installation.md
+      - Project and authentication: project-setup.md
+  - Client SDKs:
+      - Unity: unity-sdk.md
+      - TypeScript: typescript-sdk.md
+  - Game services:
+      - Cloud Code samples: cloudcode-samples.md
+      - Game Data and LiveOps: game-data-liveops.md
   - Managed multiplayer:
       - Architecture: managed-multiplayer.md
       - Gameye + Photon Fusion: gameye-fusion.md

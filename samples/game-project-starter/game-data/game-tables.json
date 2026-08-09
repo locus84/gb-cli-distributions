@@ -1,0 +1,59 @@
+[
+  {
+    "id": "starter_drop",
+    "kind": "drop",
+    "enabled": true,
+    "data": {
+      "rolls": 1,
+      "entries": [
+        {
+          "id": "gold_small",
+          "weight": 70,
+          "rewards": {
+            "currencies": [
+              { "id": "gold", "amount": 25 }
+            ],
+            "items": []
+          }
+        },
+        {
+          "id": "energy_cell",
+          "weight": 20,
+          "rewards": {
+            "currencies": [
+              { "id": "energy", "amount": 3 }
+            ],
+            "items": [
+              { "id": "energy_cell", "quantity": 1 }
+            ]
+          }
+        },
+        {
+          "id": "jackpot",
+          "weight": 10,
+          "rewards": {
+            "currencies": [
+              { "id": "gold", "amount": 100 },
+              { "id": "gems", "amount": 1 }
+            ],
+            "items": [
+              { "id": "hero_shard", "quantity": 2 }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "enemy_waves",
+    "kind": "chart",
+    "enabled": true,
+    "data": {
+      "waves": [
+        { "wave": 1, "enemy": "slime", "hp": 10, "gold": 5 },
+        { "wave": 2, "enemy": "goblin", "hp": 24, "gold": 12 },
+        { "wave": 3, "enemy": "orc", "hp": 60, "gold": 30 }
+      ]
+    }
+  }
+]
