@@ -59,7 +59,7 @@ Every deployed module is declared in [`cloudcode/manifest.json`](https://github.
 
 - `roles` controls which authenticated role may invoke the function.
 - `scopes` controls the Cloud Code call capability.
-- `serviceScopes` controls which Backend operations the sandbox may queue.
+- `serviceScopes` controls which Backend operations the sandbox may queue. Use `documents.writePublic` only for `services.documents.putPublic` / `patchPublic`, which create server-authored `player_public_readonly` snapshots.
 - Remove every unused service scope when adapting a recipe.
 
 Uploaded modules execute as untrusted data in a restricted sandbox. They do not receive arbitrary filesystem, network, environment-variable, or process access.
