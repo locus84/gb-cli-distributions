@@ -46,7 +46,7 @@ The complete fixture set covers:
 | `eventShop.purchase` | schedule and purchase-limit pattern | Resolve schedules, limits, prices, and rewards server-side. |
 | `attendance.claimDaily` | streak and daily reward | Read the calendar and prior claims from authoritative state. |
 | `battlePass.addXp` | XP and level progression | Only trusted events should award XP. |
-| `battlePass.claimReward` | free/premium reward tracks | Resolve entitlement, level, and prior claims server-side. |
+| `battlePass.claimReward` | free/premium reward tracks | Uses `iap.readEntitlements`; resolve level and prior claims from authoritative state. |
 | `upgrade.enhanceItem` | atomic cost, deterministic outcome, expected version | Resolve upgrade tables server-side and define auditable randomness. |
 | `tutorial.claimReward` | one-time step reward | Verify completion and prior claims server-side. |
 
@@ -59,7 +59,7 @@ Every deployed module is declared in [`cloudcode/manifest.json`](https://github.
 
 - `roles` controls which authenticated role may invoke the function.
 - `scopes` controls the Cloud Code call capability.
-- `serviceScopes` controls which Backend operations the sandbox may queue. Use `documents.writePublic` only for `services.documents.putPublic` / `patchPublic`, which create server-authored `player_public_readonly` snapshots.
+- `serviceScopes` controls which Backend operations the sandbox may queue or read. Public snapshot/profile reads require `documents.readPublic` and `profile.readPublic`; premium-access checks require `iap.readEntitlements`. Use `documents.writePublic` only for `services.documents.putPublic` / `patchPublic`, which create server-authored `player_public_readonly` snapshots.
 - Remove every unused service scope when adapting a recipe.
 
 Uploaded modules execute as untrusted data in a restricted sandbox. They do not receive arbitrary filesystem, network, environment-variable, or process access.

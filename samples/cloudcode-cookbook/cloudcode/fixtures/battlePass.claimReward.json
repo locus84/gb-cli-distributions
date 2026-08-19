@@ -2,7 +2,7 @@
   "input": {
     "passId": "season_1",
     "track": "premium",
-    "premiumOwned": true,
+    "entitlementId": "season_1:premium",
     "level": 2,
     "currentLevel": 3,
     "claimedRewardKeys": ["season_1:free:1"],

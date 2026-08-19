@@ -179,6 +179,7 @@
         ],
         "serviceScopes": [
           "documents.writeAuthoritative",
+          "iap.readEntitlements",
           "economy.addCurrency",
           "economy.grantItem"
         ]

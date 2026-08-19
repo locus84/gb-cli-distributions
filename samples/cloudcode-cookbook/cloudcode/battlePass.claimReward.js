@@ -28,7 +28,8 @@ exports.default = async ({ input, userId, now, services }) => {
   const data = objectOrEmpty(input)
   const passId = typeof data.passId === 'string' ? data.passId : 'season'
   const track = data.track === 'premium' ? 'premium' : 'free'
-  if (track === 'premium' && data.premiumOwned !== true) return { ok: false, error: 'PREMIUM_REQUIRED', passId, track }
+  const entitlementId = typeof data.entitlementId === 'string' ? data.entitlementId : passId + ':premium'
+  if (track === 'premium' && !(await services.iap.hasEntitlement(userId, entitlementId)).ok) return { ok: false, error: 'PREMIUM_REQUIRED', passId, track }
   const level = positiveInt(data.level, 1)
   const currentLevel = positiveInt(data.currentLevel, 0)
   if (currentLevel < level) return { ok: false, error: 'LEVEL_LOCKED', passId, track, level, currentLevel }
