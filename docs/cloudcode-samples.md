@@ -60,9 +60,12 @@ Every deployed module is declared in [`cloudcode/manifest.json`](https://github.
 - `roles` controls which authenticated role may invoke the function.
 - `scopes` controls the Cloud Code call capability.
 - `serviceScopes` controls which Backend operations the sandbox may queue or read. Public snapshot/profile reads require `documents.readPublic` and `profile.readPublic`; premium-access checks require `iap.readEntitlements`. Use `documents.writePublic` only for `services.documents.putPublic` / `patchPublic`, which create server-authored `player_public_readonly` snapshots.
+- A module using `tables.read` must also declare its bounded `tableIds`. Read tables asynchronously with `await services.tables.get(id, version?)`; the parent pins one immutable snapshot per table/version for the invocation and reuses a bounded process cache after revalidating the enabled version, instead of injecting the game's full table catalog.
 - Remove every unused service scope when adapting a recipe.
 
 Uploaded modules execute as untrusted data in a restricted sandbox. They do not receive arbitrary filesystem, network, environment-variable, or process access.
+
+An intentional game-domain rejection may throw an `Error` with a bounded uppercase `code`. Callers receive platform `errorCode: FUNCTION_DOMAIN_ERROR` plus the separate `functionErrorCode`; arbitrary messages, stacks, and properties never cross the sandbox boundary. Reserved platform codes cannot be used as function-domain codes.
 
 ## Preview and deploy
 
