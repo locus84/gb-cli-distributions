@@ -1,6 +1,6 @@
 # Cloud Code samples
 
-The public repository includes an executable Cloud Code cookbook with ten gameplay patterns, manifests, and fixture-based tests. Treat these as adaptation examples, not drop-in production game rules.
+The public repository includes an executable Cloud Code cookbook with eleven gameplay patterns, manifests, and fixture-based tests. Treat these as adaptation examples, not drop-in production game rules.
 
 [:material-github: Browse the cookbook source](https://github.com/locus84/gb-cli-distributions/tree/main/samples/cloudcode-cookbook){ .md-button .md-button--primary }
 
@@ -49,6 +49,7 @@ The complete fixture set covers:
 | `battlePass.claimReward` | free/premium reward tracks | Uses `iap.readEntitlements`; resolve level and prior claims from authoritative state. |
 | `upgrade.enhanceItem` | atomic cost, deterministic outcome, expected version | Resolve upgrade tables server-side and define auditable randomness. |
 | `tutorial.claimReward` | one-time step reward | Verify completion and prior claims server-side. |
+| `gameState.incrementSharded` | game-owned private state with CAS and deterministic shards | Resolve shard count and state keys server-side; do not use one hot document for high-write workloads. |
 
 !!! warning "Examples are not anti-fraud policy"
     Fixture inputs intentionally make each example self-contained. A production player-callable function must not trust client-supplied balances, inventory, claim history, premium ownership, probability tables, reward definitions, timestamps, or progression state. Replace those inputs with authoritative reads or trusted server-triggered values.
@@ -59,7 +60,7 @@ Every deployed module is declared in [`cloudcode/manifest.json`](https://github.
 
 - `roles` controls which authenticated role may invoke the function.
 - `scopes` controls the Cloud Code call capability.
-- `serviceScopes` controls which Backend operations the sandbox may queue or read. Public snapshot/profile reads require `documents.readPublic` and `profile.readPublic`; premium-access checks require `iap.readEntitlements`. Use `documents.writePublic` only for `services.documents.putPublic` / `patchPublic`, which create server-authored `player_public_readonly` snapshots.
+- `serviceScopes` controls which Backend operations the sandbox may queue or read. `gameState.read` / `gameState.write` grant only `services.gameState.get` / `put` against the current game's private state. Public snapshot/profile reads require `documents.readPublic` and `profile.readPublic`; premium-access checks require `iap.readEntitlements`. Use `documents.writePublic` only for `services.documents.putPublic` / `patchPublic`, which create server-authored `player_public_readonly` snapshots.
 - A module using `tables.read` must also declare its bounded `tableIds`. Read tables asynchronously with `await services.tables.get(id, version?)`; the parent pins one immutable snapshot per table/version for the invocation and reuses a bounded process cache after revalidating the enabled version, instead of injecting the game's full table catalog.
 - Remove every unused service scope when adapting a recipe.
 
@@ -88,6 +89,10 @@ gb cloudcode call quest.progress \
 ```
 
 ## Retries and side effects
+
+A `services.gameState.put` version conflict reruns the complete function in a fresh sandbox at most twice. The Backend preserves the invocation input, request ID, `now`, and pinned Game Table snapshots, and discards failed-attempt output, logs, and queued operations. A function using game state can therefore execute up to three times: keep computation side-effect-free and derive every durable change through queued service operations. After retry exhaustion, the call fails with `VERSION_CONFLICT`.
+
+`expectedVersion: 0` creates only when the state document is absent; a positive version must match exactly. Game state is physically isolated by game and cannot be targeted at another owner or game. Split high-write state across bounded documents—for example by season and deterministic player bucket—because retries do not make one hot document scale indefinitely.
 
 Cloud Code service operations are ordered and retry-safe only when the caller preserves the same request identity. If a transport retry creates a new request identity, rewards or writes can be repeated. Keep a stable request ID for retries and design game-level claim keys and transactions to be idempotent.
 

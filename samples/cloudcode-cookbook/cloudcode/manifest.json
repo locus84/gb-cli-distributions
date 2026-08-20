@@ -237,6 +237,29 @@
         "description": "Validate one-time tutorial step rewards, queue grants, and write tutorial claim state.",
         "timeoutMs": 1000
       }
+    },
+    {
+      "name": "gameState.incrementSharded",
+      "version": 1,
+      "file": "gameState.incrementSharded.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "gameState.read",
+          "gameState.write"
+        ]
+      },
+      "metadata": {
+        "displayName": "Sharded Game State Recipe",
+        "description": "Update one deterministic shard of game-owned private state with optimistic concurrency.",
+        "timeoutMs": 1000
+      }
     }
   ]
 }

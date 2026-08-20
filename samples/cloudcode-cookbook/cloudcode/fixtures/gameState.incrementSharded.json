@@ -1,0 +1,22 @@
+{
+  "input": {
+    "seasonId": "season-1"
+  },
+  "userId": "u1",
+  "roles": [
+    "player"
+  ],
+  "expect": {
+    "result": {
+      "documentId": "bucket-3",
+      "count": 1
+    },
+    "opCount": 1,
+    "ops": [
+      {
+        "service": "gameState",
+        "method": "put"
+      }
+    ]
+  }
+}

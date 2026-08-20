@@ -21,6 +21,7 @@ These recipes are implemented as executable modules with assertion fixtures:
 | `battlePass.claimReward` | implemented | Validate free/premium reward eligibility, queue rewards, and write claim state. |
 | `upgrade.enhanceItem` | implemented | Run a deterministic success/fail enhancement roll, queue success/compensation rewards, and write upgrade state. |
 | `tutorial.claimReward` | implemented | Validate one-time tutorial step rewards, queue grants, and write tutorial claim state. |
+| `gameState.incrementSharded` | implemented | Update one deterministic shard of game-owned private state with CAS. |
 | Authoritative inventory mutation | covered by patterns | `crafting.craftItem`, `eventShop.purchase`, and `upgrade.enhanceItem` demonstrate `economy.transaction` and expected-version item updates; add a standalone recipe only if users need a simpler focused example. |
 | Fixture-based tests | implemented | Every module has `cloudcode/fixtures/<name>.json` using the `expect.result`, `expect.ops`, and `expect.opCount` envelope. |
 
@@ -42,6 +43,7 @@ gb cloudcode test --source gameops-cloudcode-cookbook/cloudcode battlePass.addXp
 gb cloudcode test --source gameops-cloudcode-cookbook/cloudcode battlePass.claimReward --fixture gameops-cloudcode-cookbook/cloudcode/fixtures/battlePass.claimReward.json
 gb cloudcode test --source gameops-cloudcode-cookbook/cloudcode upgrade.enhanceItem --fixture gameops-cloudcode-cookbook/cloudcode/fixtures/upgrade.enhanceItem.json
 gb cloudcode test --source gameops-cloudcode-cookbook/cloudcode tutorial.claimReward --fixture gameops-cloudcode-cookbook/cloudcode/fixtures/tutorial.claimReward.json
+gb cloudcode test --source gameops-cloudcode-cookbook/cloudcode gameState.incrementSharded --fixture gameops-cloudcode-cookbook/cloudcode/fixtures/gameState.incrementSharded.json
 ```
 
 To deploy the pack into the current game profile:
@@ -57,6 +59,7 @@ gb sync apply --source gameops-cloudcode-cookbook
 - Keep fixtures next to each recipe and update `expect.result`, `expect.ops`, and `expect.opCount` whenever behavior changes.
 - Never trust fixture-style client inputs for balances, inventory, premium ownership, prior claims, reward tables, probabilities, timestamps, or progression state in production.
 - Preserve the same request identity across transport retries and add game-level idempotency keys for claims and rewards.
+- A `gameState.put` CAS conflict may rerun the complete function twice. Keep logic side-effect-free outside queued services, and shard high-write state instead of concentrating every player on one document.
 - Prefer compact config in fixture `input` until a repeated pattern deserves shared game-data tables or a first-class platform domain.
 - Do not mutate balances or inventory directly from CloudCode. Prefer predefined economy transaction ids for client-callable flows, and use queued CloudCode service ops (`economy.executeTransaction`, `economy.transaction`, `documents.putAuthoritative`) for server-side logic.
 - `crafting.craftItem`, `eventShop.purchase`, and `upgrade.enhanceItem` demonstrate `economy.transaction` for material/currency spend, item grants, and expectedVersion item mutation.
