@@ -22,7 +22,7 @@ gb sdk export --game game_dev_xxx --target unity \
 gb sdk verify --game game_dev_xxx
 ```
 
-Do not place the operator profile or `GB_TOKEN` in the Unity project.
+Do not place operator credentials or `GB_TOKEN` in the Unity project.
 
 ## Bootstrap and anonymous sign-in
 

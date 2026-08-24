@@ -4,22 +4,21 @@ This guide assumes a gb Backend is already deployed and you have an operator acc
 
 ## Create a development game
 
-Install the CLI, then authenticate against the Operations URL:
+Install the CLI, then initialize the checkout:
 
 ```bash
-gb login --base-url https://ops.example.com
-gb game create mygame-dev
+gb init
 ```
 
-Copy the returned immutable game ID and create local project context:
+There is no default backend. The interactive flow asks for the Operations URL, logs in if needed, selects an organisation, and lets you select or create a game. For automation, provide every required target value explicitly:
 
 ```bash
-gb init --base-url https://ops.example.com --game game_dev_xxx
+gb init --base-url https://ops.example.com --runtime-base-url https://runtime.example.com --org org_xxx --game game_dev_xxx
 gb context
-gb doctor --game game_dev_xxx
+gb doctor
 ```
 
-`game-backend.json` supplies local Ops/Runtime URLs and game selection. CI should still use explicit `GB_GAME` and protected credentials.
+`game-backend.json` supplies local Ops/Runtime URLs, organisation, and game selection. Register additional games by immutable ID with `gb context add game_xxx`; CI should still use explicit `GB_GAME` and protected credentials.
 
 ## Apply the public starter
 
@@ -65,17 +64,18 @@ Start a runtime test player only when needed:
 ```bash
 gb auth anonymous --game game_dev_xxx \
   --game-group-key <publishable-group-key> \
-  --save-profile dev-player device-local-1
+  --save-player dev-player device-local-1
 ```
 
-The saved profile contains a player session and must remain local.
+The saved player session is separate from operator credentials and must remain local.
 
 ## Protected production
 
 Create production separately and protect it before applying content:
 
 ```bash
-gb game create --protect mygame-prod
+gb game create --protect mygame-prod  # copy returned game.id as PROD_GAME_ID
+gb context add game_prod_xxx
 gb launch checklist --game game_prod_xxx --target production
 ```
 
