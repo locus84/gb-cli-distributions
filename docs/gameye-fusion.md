@@ -10,6 +10,7 @@ A managed allocation receives short-lived Session-scoped values:
 | `GB_MATCH_ID` | Frozen Match scope |
 | `GB_SESSION_ID` | Managed Session scope |
 | `GB_PLAYER_IDS` | Initial authoritative human roster |
+| `GB_PLAYER_LOADOUT_SNAPSHOTS` | Bounded JSON array with one frozen Backend Loadout snapshot per initial roster player |
 | `GB_JOIN_TOKEN_KEY` | Per-Session key used only to verify player join credentials |
 | `GB_SESSION_TOKEN` | Bearer credential for this Session's server APIs |
 | `GB_RUNTIME_BASE_URL` | Runtime API origin reachable from Gameye |
@@ -18,7 +19,7 @@ A managed allocation receives short-lived Session-scoped values:
 | `GAMEYE_HOST` | Public mapped host advertised by Gameye |
 | `GAMEYE_PORT_UDP_7777` | Example mapped public UDP port for local port 7777 |
 
-Never include `GB_JOIN_TOKEN_KEY`, `GB_SESSION_TOKEN`, or their contents in logs or provider metadata.
+Never include `GB_JOIN_TOKEN_KEY`, `GB_SESSION_TOKEN`, or their contents in logs or provider metadata. `GB_PLAYER_LOADOUT_SNAPSHOTS` is provider-visible session environment data, so its inventory `instanceData` must not contain secrets or personally identifiable information. At startup, require the snapshot player set to equal `GB_PLAYER_IDS` and reject malformed, duplicate-slot, or missing entries. A game mode that requires Loadouts must additionally reject `hasLoadout:false` or `valid:false` before admitting that player; modes that do not use Loadouts may explicitly allow those markers.
 
 ## Bind address versus advertised address
 
@@ -51,8 +52,11 @@ The client forwards its UTF-8 bytes through Fusion `ConnectionToken`. The server
 1. parses exactly the supported token version and fields;
 2. verifies the HMAC in constant time using the Session-scoped key;
 3. checks Game, Match, Session, expiry, and authoritative roster membership;
-4. applies capacity, duplicate, reconnect, and admission-phase rules;
-5. logs only a sanitized rejection category.
+4. requires the matching frozen Loadout snapshot and validates the submitted semantic selections against it;
+5. applies capacity, duplicate, reconnect, and admission-phase rules;
+6. logs only a sanitized rejection category.
+
+The UDP test fixture checks snapshot structure, roster binding and join credentials; its `HELLO` protocol carries no equipment selections. It does **not** prove Fusion/HEXTER's client-selection comparison. The production game server must implement step4 before claiming Loadout authority.
 
 The immutable credential expiry used by the server token, player token, and expected server claims must be identical. The operational Session can expire earlier; once it does, the Backend suppresses player credentials and rejects server APIs even if the cryptographic credential has remaining time.
 
