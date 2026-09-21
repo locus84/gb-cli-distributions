@@ -87,6 +87,28 @@ QoS uses Gameye ping targets, not the allocated game server. If ICMP is unavaila
 
 The SDK returns Session handoff data; game code starts its networking client with the returned Session name, region, endpoint metadata, and join token. Backend Solo does not require a Photon Lobby connection. See [Gameye + Photon Fusion](gameye-fusion.md) for the dedicated-server side.
 
+## Managed dedicated servers
+
+Dedicated-server projects may explicitly reference the package's opt-in `GameBackend.Unity.ManagedRuntime` assembly. It is not part of the player `GB` facade and does not persist the session-scoped server token.
+
+```csharp
+using GameBackend.Unity.ManagedRuntime;
+
+var runtime = ManagedRuntimeSession.FromEnvironment();
+var update = await runtime.Backfill.OpenAsync(shutdownToken);
+ApplyAuthoritativeRoster(update.Payload);
+runtime.Backfill.Commit(update);
+
+// Before gameplay, apply and commit the authoritative closed roster.
+var finalUpdate = await runtime.Backfill.FinalizeAsync(shutdownToken);
+ApplyAuthoritativeRoster(finalUpdate.Payload);
+runtime.Backfill.Commit(finalUpdate);
+```
+
+The SDK owns the existing Backend protocol's bearer transport, typed payloads, timeout, monotonic replay checks, and finalize-versus-late-response ordering. It does not own FishNet/NGO/Mirror state, game-specific Loadout validity, reconnect grace, bot policy, or room transitions. Approve is never blindly retried after an unknown outcome; reconcile with report or finalize. See [managed-session credentials](../domains/managed-session-auth.md) for the complete lifecycle and security contract.
+
+With the disposable test PostgreSQL service running, `npm run test:unity-managed-runtime:e2e` exercises a real 2→3-player Match through the Backend queue evaluator, Gameye adapter against passive fake Gameye, managed credentials, headless Unity SDK, frozen Loadout assignment, report, and finalization. `npm run test:unity-managed-runtime:e2e:lost-approve` additionally commits a real approve transaction and drops its response, proving that Unity reconciles through authoritative finalize without duplicate admission. These remain separate from HEXTER/FishNet gameplay validation.
+
 ## Realtime recovery
 
 Realtime events are hints, not durable history. After disconnect, reconnect, restore subscriptions, then read persisted state over HTTP:
