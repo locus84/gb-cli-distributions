@@ -33,7 +33,7 @@
       "levelBefore": 1,
       "levelAfter": 2,
       "success": true,
-      "queuedRewards": 1
+      "rewardCount": 1
     },
     "ops": [
       {

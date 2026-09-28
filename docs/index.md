@@ -27,7 +27,7 @@ Native macOS and Linux binaries, Unity and TypeScript SDK packages, checksums, a
 
 ## Cloud Code cookbook
 
-The public repository includes ten executable gameplay recipes with least-privilege manifests and assertion fixtures. Start with the local workflow, inspect queued operations, then adapt every client-supplied rule to authoritative game state before production use.
+The public repository includes executable gameplay recipes with least-privilege manifests and assertion fixtures. Start with the local workflow, inspect the recorded transaction operations, then adapt every client-supplied rule to authoritative game state before production use.
 
 - [Cloud Code samples and workflow](cloudcode-samples.md)
 - [Browse the downloadable cookbook](https://github.com/locus84/gb-cli-distributions/tree/main/samples/cloudcode-cookbook)

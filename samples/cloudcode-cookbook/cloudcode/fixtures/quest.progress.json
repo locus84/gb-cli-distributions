@@ -17,7 +17,7 @@
       "ok": true,
       "questId": "daily_kill_10",
       "completed": true,
-      "queuedRewards": 1
+      "rewardCount": 1
     },
     "ops": [
       {

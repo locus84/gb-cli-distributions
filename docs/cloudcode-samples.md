@@ -14,7 +14,7 @@ gb cloudcode lint --source ./cloudcode
 gb cloudcode test --source ./cloudcode hello --fixture ./cloudcode/fixtures/hello.json
 ```
 
-`init` creates the function, `manifest.json`, local type declarations, and a fixture. Local tests execute the module and assert its result and queued service operations; they do not write production data.
+`init` creates the function, `manifest.json`, local type declarations, and a fixture. Local tests execute the module and record transaction operations for assertions; they do not write production data.
 
 Available scaffold templates include `hello`, `quest-progress`, `idle-income`, and `gacha-roll`:
 
@@ -60,7 +60,7 @@ Every deployed module is declared in [`cloudcode/manifest.json`](https://github.
 
 - `roles` controls which authenticated role may invoke the function.
 - `scopes` controls the Cloud Code call capability.
-- `serviceScopes` controls which Backend operations the sandbox may queue or read. `gameState.read` / `gameState.write` grant only `services.gameState.get` / `put` against the current game's private state. Public snapshot/profile reads require `documents.readPublic` and `profile.readPublic`; premium-access checks require `iap.readEntitlements`. Use `documents.writePublic` only for `services.documents.putPublic` / `patchPublic`, which create server-authored `player_public_readonly` snapshots.
+- `serviceScopes` controls which Backend operations the sandbox may read or execute. Reads are available from `services`; writes are available only from the `tx` object passed to `services.transaction`. `gameState.read` / `gameState.write` grant only game-scoped state access. Public snapshot/profile reads require `documents.readPublic` and `profile.readPublic`; premium-access checks require `iap.readEntitlements`. Use `documents.writePublic` only for `tx.documents.putPublic` / `patchPublic`, which create server-authored `player_public_readonly` snapshots.
 - A module using `tables.read` must also declare its bounded `tableIds`. Read tables asynchronously with `await services.tables.get(id, version?)`; the parent pins one immutable snapshot per table/version for the invocation and reuses a bounded process cache after revalidating the enabled version, instead of injecting the game's full table catalog.
 - Remove every unused service scope when adapting a recipe.
 
@@ -88,12 +88,22 @@ gb cloudcode call quest.progress \
   '{"questId":"daily_kill_10","eventName":"enemyKilled","amount":1,"target":10}'
 ```
 
-## Retries and side effects
+## Transactions, conflicts, and replay
 
-A `services.gameState.put` version conflict reruns the complete function in a fresh sandbox at most twice. The Backend preserves the invocation input, request ID, `now`, and pinned Game Table snapshots, and discards failed-attempt output, logs, and queued operations. A function using game state can therefore execute up to three times: keep computation side-effect-free and derive every durable change through queued service operations. After retry exhaustion, the call fails with `VERSION_CONFLICT`.
+Wrap every write-bearing flow in one short transaction and use only the callback's `tx` services inside it:
 
-`expectedVersion: 0` creates only when the state document is absent; a positive version must match exactly. Game state is physically isolated by game and cannot be targeted at another owner or game. Split high-write state across bounded documents—for example by season and deterministic player bucket—because retries do not make one hot document scale indefinitely.
+```js
+exports.default = async ({ userId, services }) => services.transaction(async (tx) => {
+  const wallet = await tx.economy.addCurrency(userId, 'gold', 10, 'quest')
+  const visible = await tx.economy.getWallet(userId) // read-your-writes
+  return { wallet, visible }
+})
+```
 
-Cloud Code service operations are ordered and retry-safe only when the caller preserves the same request identity. If a transport retry creates a new request identity, rewards or writes can be repeated. Keep a stable request ID for retries and design game-level claim keys and transactions to be idempotent.
+The callback runs on one PostgreSQL connection pinned to the function's game placement (or the existing global placement for global functions). Its reads observe earlier writes, write calls return their real service results, and domain writes plus the successful invocation output commit together. A thrown error, denied RPC, sandbox timeout/crash, database deadline, or dry-run rolls the transaction back. Nested transactions, transaction calls in parallel, external provider/network work, and service calls after transaction entry are unsupported. Keep the block DB-only and short.
+
+There is no automatic callback retry. `expectedVersion: 0` creates only when the state document is absent; a positive version must match exactly. A conflict returns `VERSION_CONFLICT`, and the caller decides whether to fetch fresh state and submit a new request. Split high-write state across bounded documents—for example by season and deterministic player bucket—rather than concentrating every player on one hot row.
+
+A completed request retried with the same request ID, function version, caller authorization, and non-sensitive input returns its committed output without reapplying writes; mismatched reuse and inputs containing redacted secret fields are rejected. A process-crashed `in_progress` reservation can be fenced and reclaimed after 60 seconds. A different request ID is a new invocation, so game-level claim keys and transactions must still encode business idempotency where needed.
 
 Promote a recipe into a first-class Backend feature when several games share its schema or when fraud, payment, legal, rollback, or audit requirements need stronger centralized guarantees.

@@ -34,7 +34,7 @@
       "recipeId": "iron_sword",
       "itemId": "iron_sword",
       "quantity": 1,
-      "queuedRewards": 1
+      "rewardCount": 1
     },
     "ops": [
       {

@@ -20,7 +20,7 @@
       "tutorialId": "first_session",
       "stepId": "open_shop",
       "claimKey": "first_session:open_shop",
-      "queuedRewards": 1
+      "rewardCount": 1
     },
     "ops": [
       {

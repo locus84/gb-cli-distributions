@@ -45,7 +45,7 @@
     "result": {
       "ok": true,
       "bannerId": "starter",
-      "queuedRewards": 1,
+      "rewardCount": 1,
       "selected": {
         "entryId": "rare_sword",
         "rarity": "rare",

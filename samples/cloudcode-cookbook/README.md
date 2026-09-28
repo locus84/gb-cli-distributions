@@ -11,16 +11,16 @@ These recipes are implemented as executable modules with assertion fixtures:
 
 | Recipe | Status | Notes |
 | --- | --- | --- |
-| `quest.progress` | implemented | Increment progress, write quest state, and queue a completion reward. |
-| `idle.claimOffline` | implemented | Compute capped offline income with ad/VIP multipliers, queue currency, and write claim state. |
-| `gacha.roll` | implemented | Deterministic weighted roll with pity, duplicate conversion, queued reward, roll history write, and `gacha_roll` analytics event. |
-| `crafting.craftItem` | implemented | Validate materials from input, queue crafted item grant, and write a craft record. |
-| `eventShop.purchase` | implemented | Validate schedule and purchase limits, queue reward, and write purchase counter state. |
-| `attendance.claimDaily` | implemented | Validate a calendar day, queue the day reward, and write streak/claim state. |
+| `quest.progress` | implemented | Increment progress, write quest state, and apply a completion reward atomically. |
+| `idle.claimOffline` | implemented | Compute capped offline income with ad/VIP multipliers, apply currency atomically, and write claim state. |
+| `gacha.roll` | implemented | Deterministic weighted roll with pity, duplicate conversion, atomic reward, roll history write, and `gacha_roll` analytics event. |
+| `crafting.craftItem` | implemented | Validate materials from input, apply crafted item grant atomically, and write a craft record. |
+| `eventShop.purchase` | implemented | Validate schedule and purchase limits, apply reward atomically, and write purchase counter state. |
+| `attendance.claimDaily` | implemented | Validate a calendar day, apply the day reward atomically, and write streak/claim state. |
 | `battlePass.addXp` | implemented | Add XP, compute pass level changes, and write progress state. |
-| `battlePass.claimReward` | implemented | Validate free/premium reward eligibility, queue rewards, and write claim state. |
-| `upgrade.enhanceItem` | implemented | Run a deterministic success/fail enhancement roll, queue success/compensation rewards, and write upgrade state. |
-| `tutorial.claimReward` | implemented | Validate one-time tutorial step rewards, queue grants, and write tutorial claim state. |
+| `battlePass.claimReward` | implemented | Validate free/premium reward eligibility, apply reward atomicallys, and write claim state. |
+| `upgrade.enhanceItem` | implemented | Run a deterministic success/fail enhancement roll, apply success/compensation rewards atomically, and write upgrade state. |
+| `tutorial.claimReward` | implemented | Validate one-time tutorial step rewards, apply grants atomically, and write tutorial claim state. |
 | `gameState.incrementSharded` | implemented | Update one deterministic shard of game-owned private state with CAS. |
 | Authoritative inventory mutation | covered by patterns | `crafting.craftItem`, `eventShop.purchase`, and `upgrade.enhanceItem` demonstrate `economy.transaction` and expected-version item updates; add a standalone recipe only if users need a simpler focused example. |
 | Fixture-based tests | implemented | Every module has `cloudcode/fixtures/<name>.json` using the `expect.result`, `expect.ops`, and `expect.opCount` envelope. |
@@ -59,9 +59,9 @@ gb sync apply --source gameops-cloudcode-cookbook
 - Keep fixtures next to each recipe and update `expect.result`, `expect.ops`, and `expect.opCount` whenever behavior changes.
 - Never trust fixture-style client inputs for balances, inventory, premium ownership, prior claims, reward tables, probabilities, timestamps, or progression state in production.
 - Preserve the same request identity across transport retries and add game-level idempotency keys for claims and rewards.
-- A `gameState.put` CAS conflict may rerun the complete function twice. Keep logic side-effect-free outside queued services, and shard high-write state instead of concentrating every player on one document.
+- Write only inside one short `services.transaction(async tx => ...)` block. A `gameState.put` CAS conflict is returned to the caller without automatic callback retry; shard high-write state instead of concentrating every player on one document.
 - Prefer compact config in fixture `input` until a repeated pattern deserves shared game-data tables or a first-class platform domain.
-- Do not mutate balances or inventory directly from CloudCode. Prefer predefined economy transaction ids for client-callable flows, and use queued CloudCode service ops (`economy.executeTransaction`, `economy.transaction`, `documents.putAuthoritative`) for server-side logic.
+- Do not mutate balances or inventory directly from CloudCode. Prefer predefined economy transaction ids for client-callable flows, and use transactional CloudCode service calls (`economy.executeTransaction`, `economy.transaction`, `documents.putAuthoritative`) for server-side logic.
 - `crafting.craftItem`, `eventShop.purchase`, and `upgrade.enhanceItem` demonstrate `economy.transaction` for material/currency spend, item grants, and expectedVersion item mutation.
 
 ## When to promote to first-class support

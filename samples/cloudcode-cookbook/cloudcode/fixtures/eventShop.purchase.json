@@ -31,7 +31,7 @@
       "sku": "lucky_box",
       "purchased": 2,
       "limit": 3,
-      "queuedRewards": 1
+      "rewardCount": 1
     },
     "ops": [
       {
