@@ -77,6 +77,8 @@ Use client-writable saves/documents only for non-authoritative preferences or pr
 
 ```csharp
 var ticket = await GB.Matchmaking.CreateTicketWithQosAsync("solo");
+// Follows the server's `pollAfterMs` hint; an explicit pollIntervalMs caps it.
+// A connected GB.Realtime socket wakes the wait early on `matchmaking.ticket.updated`.
 ticket = await GB.Matchmaking.WaitForTicketActionAsync(ticket.id);
 
 // Polling is authoritative. When the Match allocation becomes ready:

@@ -102,4 +102,12 @@ Browsers provide `WebSocket`. Node runtimes without one must provide a `websocke
 
 Use the player-safe matchmaking methods to read available queues, submit QoS measurements when supported, create a Ticket, and poll until the Backend exposes a ready multiplayer Session. The networking engine then consumes the Session handoff fields and player join token.
 
+Ticket reads carry a `pollAfterMs` hint. While `gb.realtime` is connected, the Backend also pushes `matchmaking.ticket.updated` (`MatchmakingTicketUpdatedEvent`) and `multiplayer.session.updated` (`MultiplayerSessionUpdatedEvent`) to the affected player; use them to re-read early instead of waiting out the poll:
+
+```ts
+gb.realtime.on('matchmaking.ticket.updated', ({ data }) => {
+  if (data.ticketId === ticketId) void refreshTicket() // calls gb.matchmaking.getTicket(ticketId)
+})
+```
+
 Do not treat realtime ticket events as final state, and do not join a Photon Lobby for Backend-managed Solo unless the game separately uses legacy Room matching.
