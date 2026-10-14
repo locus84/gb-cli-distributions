@@ -66,6 +66,10 @@ Every deployed module is declared in [`cloudcode/manifest.json`](https://github.
 
 Uploaded modules execute as untrusted data in a restricted sandbox. They do not receive arbitrary filesystem, network, environment-variable, or process access.
 
+Key lookups resolve `null` when the row does not exist: `gameState.get`, `documents.get` and `matchResults.getSettlement` (not settled yet). Other reads that need their target, such as `matchResults.get` for an unknown match, fail with `NOT_FOUND`.
+
+Inside `services.transaction`, a `tx` call that fails rolls back the whole transaction, even when the function catches the error: nothing written before it commits, and every later `tx` call fails because the transaction is no longer active. Check for `null` instead of catching misses, do reads that may fail for other reasons with the read services (`services.*`) before entering the transaction, and let a conflicting `expectedVersion` or other failed write fail the call so the request or job retry handles it.
+
 An intentional game-domain rejection may throw an `Error` with a bounded uppercase `code`. Callers receive platform `errorCode: FUNCTION_DOMAIN_ERROR` plus the separate `functionErrorCode`; arbitrary messages, stacks, and properties never cross the sandbox boundary. Reserved platform codes cannot be used as function-domain codes.
 
 ## Preview and deploy
