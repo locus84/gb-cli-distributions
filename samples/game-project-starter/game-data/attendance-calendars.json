@@ -1,5 +1,6 @@
 [
   {
+    "id": "starter-login",
     "name": "Starter Login Calendar",
     "cycleDays": 7,
     "rewards": [
