@@ -11,6 +11,7 @@ A managed allocation receives short-lived Session-scoped values:
 | `GB_SESSION_ID` | Managed Session scope |
 | `GB_PLAYER_IDS` | Initial authoritative human roster |
 | `GB_PLAYER_LOADOUT_SNAPSHOTS` | Bounded JSON array with one frozen Backend Loadout snapshot per initial roster player |
+| `GB_PLAYER_PROFILE_SNAPSHOTS` | Bounded JSON array with one frozen `{ playerId, displayName }` per initial roster player; `displayName` is `null` when the player has no nickname |
 | `GB_JOIN_TOKEN_KEY` | Per-Session key used only to verify player join credentials |
 | `GB_SESSION_TOKEN` | Bearer credential for this Session's server APIs |
 | `GB_RUNTIME_BASE_URL` | Runtime API origin reachable from Gameye |
@@ -20,6 +21,8 @@ A managed allocation receives short-lived Session-scoped values:
 | `GAMEYE_PORT_UDP_7777` | Example mapped public UDP port for local port 7777 |
 
 Never include `GB_JOIN_TOKEN_KEY`, `GB_SESSION_TOKEN`, or their contents in logs or provider metadata. `GB_PLAYER_LOADOUT_SNAPSHOTS` is provider-visible session environment data, so its inventory `instanceData` must not contain secrets or personally identifiable information. At startup, require the snapshot player set to equal `GB_PLAYER_IDS` and reject malformed, duplicate-slot, or missing entries. A game mode that requires Loadouts must additionally reject `hasLoadout:false` or `valid:false` before admitting that player; modes that do not use Loadouts may explicitly allow those markers.
+
+`GB_PLAYER_PROFILE_SNAPSHOTS` is also provider-visible and carries the player's public game nickname. Display names are cosmetic: identity comes from the verified join token, so a server should fall back to its own label for a `null` or out-of-policy `displayName` rather than refusing the player, and should ignore unknown fields so Backend can add profile fields later.
 
 ## Bind address versus advertised address
 
