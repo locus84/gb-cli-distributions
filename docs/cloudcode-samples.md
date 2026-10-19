@@ -92,6 +92,8 @@ gb cloudcode call quest.progress \
   '{"questId":"daily_kill_10","eventName":"enemyKilled","amount":1,"target":10}'
 ```
 
+Game clients call a function by name without a version. The Backend then runs the latest enabled version, so a fixed version or a `gb cloudcode rollback` takes effect without a client release. A client that pins a version keeps running that code after a fix ships, and gets `409 FUNCTION_VERSION_REVOKED` once a rollback revokes it. Keep a function's input and output backward compatible; for a breaking change, add a new function name. Pin versions only in server-side bindings such as triggers and competitions, which operators can repoint immediately.
+
 ## Transactions, conflicts, and replay
 
 Wrap every write-bearing flow in one short transaction and use only the callback's `tx` services inside it:
