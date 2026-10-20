@@ -1,8 +1,7 @@
 {
   "input": {
     "bannerId": "starter",
-    "random": 0.95,
-    "pityBefore": 0,
+    "pityBefore": 9,
     "pityThreshold": 10,
     "entries": [
       {
@@ -22,6 +21,7 @@
         "rarity": "rare",
         "weight": 10,
         "resetsPity": true,
+        "guaranteed": true,
         "rewards": [
           {
             "type": "item",
@@ -50,7 +50,7 @@
         "entryId": "rare_sword",
         "rarity": "rare",
         "duplicate": false,
-        "guaranteed": false,
+        "guaranteed": true,
         "pityAfter": 0
       }
     },

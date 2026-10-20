@@ -37,7 +37,8 @@ exports.default = async ({
       maxLevel
     };
     const successRate = Math.max(0, Math.min(1, numberOr(data.successRate, 0)));
-    const random = Math.max(0, Math.min(0.999999, numberOr(data.random, 0.5)));
+    // The roll is drawn inside the server sandbox and recorded in the state below; never read it from player input.
+    const random = Math.random();
     const success = random < successRate;
     const levelAfter = success ? levelBefore + 1 : levelBefore;
     const resultItemId = typeof data.resultItemId === 'string' ? data.resultItemId : itemInstanceId + '+1';

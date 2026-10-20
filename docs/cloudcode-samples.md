@@ -41,13 +41,13 @@ The complete fixture set covers:
 | --- | --- | --- |
 | `quest.progress` | progress document and completion reward | Read progress and quest definitions from authoritative state. |
 | `idle.claimOffline` | capped elapsed-time reward | Read the last claim and multipliers from authoritative state. |
-| `gacha.roll` | weighted roll, pity, reward, analytics | Never accept weights, seed, pity, or ownership from a player; add regulatory/audit controls. |
+| `gacha.roll` | server-drawn weighted roll, pity, reward, analytics | Never accept weights, seed, roll values, pity, or ownership from a player; for CSPRNG draws over server-owned weights, roll a Game Table with `services.tables.roll(tableId)`; add regulatory/audit controls. |
 | `crafting.craftItem` | atomic material spend and item grant | Resolve recipes server-side; do not accept arbitrary costs or outputs. |
 | `eventShop.purchase` | schedule and purchase-limit pattern | Resolve schedules, limits, prices, and rewards server-side. |
 | `attendance.claimDaily` | streak and daily reward | Read the calendar and prior claims from authoritative state. |
 | `battlePass.addXp` | XP and level progression | Only trusted events should award XP. |
 | `battlePass.claimReward` | free/premium reward tracks | Uses `iap.readEntitlements`; resolve level and prior claims from authoritative state. |
-| `upgrade.enhanceItem` | atomic cost, deterministic outcome, expected version | Resolve upgrade tables server-side and define auditable randomness. |
+| `upgrade.enhanceItem` | atomic cost, server-drawn outcome, expected version | Resolve upgrade tables server-side and define auditable randomness. |
 | `tutorial.claimReward` | one-time step reward | Verify completion and prior claims server-side. |
 | `gameState.incrementSharded` | game-owned private state with CAS and deterministic shards | Resolve shard count and state keys server-side; do not use one hot document for high-write workloads. |
 

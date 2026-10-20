@@ -5,8 +5,7 @@
     "levelBefore": 1,
     "expectedVersion": 2,
     "maxLevel": 5,
-    "successRate": 0.7,
-    "random": 0.42,
+    "successRate": 1,
     "resultItemId": "iron_sword_plus_2",
     "materials": [
       {

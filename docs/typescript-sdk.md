@@ -77,6 +77,8 @@ await gb.economy.executeTransaction(
 )
 ```
 
+Game table rolls and transaction rolls are drawn by the backend. `config.rollGameTable(id, { rollId, version })` no longer accepts `random`, and a top-level `random`/`randoms` in a request returns `400 RANDOM_SERVER_ASSIGNED`.
+
 The manifest version is automatically sent on later version-gated calls. Use predefined transactions or hardened Cloud Code for authoritative changes; do not write currency or paid inventory through client saves/documents.
 
 ## Realtime continuity

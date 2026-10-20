@@ -13,13 +13,13 @@ These recipes are implemented as executable modules with assertion fixtures:
 | --- | --- | --- |
 | `quest.progress` | implemented | Increment progress, write quest state, and apply a completion reward atomically. |
 | `idle.claimOffline` | implemented | Compute capped offline income with ad/VIP multipliers, apply currency atomically, and write claim state. |
-| `gacha.roll` | implemented | Deterministic weighted roll with pity, duplicate conversion, atomic reward, roll history write, and `gacha_roll` analytics event. |
+| `gacha.roll` | implemented | Weighted roll drawn in the server sandbox (never from player input) with pity, duplicate conversion, atomic reward, roll history write, and `gacha_roll` analytics event. |
 | `crafting.craftItem` | implemented | Validate materials from input, apply crafted item grant atomically, and write a craft record. |
 | `eventShop.purchase` | implemented | Validate schedule and purchase limits, apply reward atomically, and write purchase counter state. |
 | `attendance.claimDaily` | implemented | Validate a calendar day, apply the day reward atomically, and write streak/claim state. |
 | `battlePass.addXp` | implemented | Add XP, compute pass level changes, and write progress state. |
 | `battlePass.claimReward` | implemented | Validate free/premium reward eligibility, apply reward atomicallys, and write claim state. |
-| `upgrade.enhanceItem` | implemented | Run a deterministic success/fail enhancement roll, apply success/compensation rewards atomically, and write upgrade state. |
+| `upgrade.enhanceItem` | implemented | Run a success/fail enhancement roll drawn in the server sandbox (never from player input), apply success/compensation rewards atomically, and write upgrade state. |
 | `tutorial.claimReward` | implemented | Validate one-time tutorial step rewards, apply grants atomically, and write tutorial claim state. |
 | `gameState.incrementSharded` | implemented | Update one deterministic shard of game-owned private state with CAS. |
 | Authoritative inventory mutation | covered by patterns | `crafting.craftItem`, `eventShop.purchase`, and `upgrade.enhanceItem` demonstrate `economy.transaction` and expected-version item updates; add a standalone recipe only if users need a simpler focused example. |

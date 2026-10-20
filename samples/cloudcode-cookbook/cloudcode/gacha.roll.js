@@ -59,7 +59,8 @@ exports.default = async ({
     const pityThreshold = Math.max(0, Math.floor(positiveNumber(data.pityThreshold, 0)));
     const guaranteed = pityThreshold > 0 && pityBefore + 1 >= pityThreshold;
     const guaranteedEntry = entries.find(entry => entry && entry.guaranteed === true);
-    const selected = guaranteed && guaranteedEntry ? guaranteedEntry : pickWeighted(entries, data.random);
+    // The roll is drawn inside the server sandbox; never read it from player input.
+    const selected = guaranteed && guaranteedEntry ? guaranteedEntry : pickWeighted(entries, Math.random());
     if (!selected) return {
       ok: false,
       error: 'NO_ROLL_ENTRIES'

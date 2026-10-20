@@ -71,6 +71,8 @@ await GB.Economy.ExecuteTransactionAsync(
 );
 ```
 
+Game table rolls and transaction rolls are drawn by the backend. `RollGameTableAsync`/`RollGameTableRawAsync` no longer take `random` (signature `(id, rollId, version, idempotencyKey)`; `idempotencyKey` moved from 5th to 4th), and a top-level `random`/`randoms` in a request returns `400 RANDOM_SERVER_ASSIGNED`.
+
 Use client-writable saves/documents only for non-authoritative preferences or progress that is safe to trust. Currency, paid inventory, claim history, IAP fulfillment, rewards, and competitive progression belong in dedicated APIs, transactions, trusted server runtime, or hardened Cloud Code.
 
 ## Managed matchmaking handoff

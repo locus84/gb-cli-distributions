@@ -82,6 +82,8 @@ gb sync diff --source .
 
 Do not expose arbitrary spend/grant specifications to players. Resolve prices, outputs, schedules, limits, and premium ownership from server-managed definitions or authoritative state.
 
+Rolls are server-assigned. Transaction `rolls` and `POST /game-tables/:id/roll` (drop and non-drop tables) use server-generated CSPRNG randomness; a player request whose body has a top-level `random` or `randoms` field fails with `400 RANDOM_SERVER_ASSIGNED` and writes nothing. Nested fields with those names, such as `inputs.random`, are ordinary game input: they are accepted and never feed the roll. Only server-side callers (Cloud Code `services.tables.roll` and `tx.economy.executeTransaction`) can pass explicit roll values, for reproducible operator actions and tests.
+
 ## Recommended promotion path
 
 1. Start non-secret definitions in version-controlled Game Data.
