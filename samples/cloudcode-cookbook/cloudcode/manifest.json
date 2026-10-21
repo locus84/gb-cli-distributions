@@ -249,6 +249,30 @@
         "description": "Update one deterministic shard of game-owned private state with optimistic concurrency.",
         "timeoutMs": 1000
       }
+    },
+    {
+      "name": "profile.readCard",
+      "file": "profile.readCard.js",
+      "enabled": true,
+      "permissions": {
+        "roles": [
+          "player"
+        ],
+        "scopes": [
+          "cloudcode:call"
+        ],
+        "serviceScopes": [
+          "profile.readPublic",
+          "liveOps.read",
+          "leaderboards.read",
+          "gameState.read"
+        ]
+      },
+      "metadata": {
+        "displayName": "Profile Card Read Recipe",
+        "description": "Read the caller's public profile, active-season rank, and game-owned stats with one services.readBatch call.",
+        "timeoutMs": 1000
+      }
     }
   ]
 }

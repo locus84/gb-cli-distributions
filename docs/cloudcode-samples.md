@@ -1,6 +1,6 @@
 # Cloud Code samples
 
-The public repository includes an executable Cloud Code cookbook with eleven gameplay patterns, manifests, and fixture-based tests. Treat these as adaptation examples, not drop-in production game rules.
+The public repository includes an executable Cloud Code cookbook with twelve gameplay patterns, manifests, and fixture-based tests. Treat these as adaptation examples, not drop-in production game rules.
 
 [:material-github: Browse the cookbook source](https://github.com/locus84/gb-cli-distributions/tree/main/samples/cloudcode-cookbook){ .md-button .md-button--primary }
 
@@ -50,6 +50,7 @@ The complete fixture set covers:
 | `upgrade.enhanceItem` | atomic cost, server-drawn outcome, expected version | Resolve upgrade tables server-side and define auditable randomness. |
 | `tutorial.claimReward` | one-time step reward | Verify completion and prior claims server-side. |
 | `gameState.incrementSharded` | game-owned private state with CAS and deterministic shards | Resolve shard count and state keys server-side; do not use one hot document for high-write workloads. |
+| `profile.readCard` | read-only profile card from one `services.readBatch` call | Choose the competition event kind server-side and keep the batch to the reads the screen needs. |
 
 !!! warning "Examples are not anti-fraud policy"
     Fixture inputs intentionally make each example self-contained. A production player-callable function must not trust client-supplied balances, inventory, claim history, premium ownership, probability tables, reward definitions, timestamps, or progression state. Replace those inputs with authoritative reads or trusted server-triggered values.
@@ -71,6 +72,35 @@ Key lookups resolve `null` when the row does not exist: `gameState.get`, `docume
 Inside `services.transaction`, a `tx` call that fails rolls back the whole transaction, even when the function catches the error: nothing written in the transaction commits, and the invocation fails with that first call's error (for example `404 NOT_FOUND` or `412 VERSION_CONFLICT`) no matter what the function does after catching it. Check for `null` instead of catching misses, do reads that may fail for other reasons with the read services (`services.*`) before entering the transaction, and let a conflicting `expectedVersion` or other failed write fail the call so the request or job retry handles it.
 
 An intentional game-domain rejection may throw an `Error` with a bounded uppercase `code`. Callers receive platform `errorCode: FUNCTION_DOMAIN_ERROR` plus the separate `functionErrorCode`; arbitrary messages, stacks, and properties never cross the sandbox boundary. Reserved platform codes cannot be used as function-domain codes.
+
+## Read-only functions: one batch
+
+A function that only reads can send all of its reads in one service call with `services.readBatch(calls)`. Each call is `{ service, method, args }` for a read method that the manifest's `serviceScopes` allow. The batch resolves to one result per call, in the same order:
+
+```js
+exports.default = async ({ userId, now, services }) => {
+  const [profile, season, stats] = await services.readBatch([
+    { service: 'profile', method: 'getPublic', args: [userId] },
+    { service: 'leaderboards', method: 'getRankForActiveEvent', args: ['league.season', now, userId] },
+    { service: 'gameState', method: 'get', args: ['profile-stats', userId] },
+  ])
+  if (!profile.ok) return { ok: false, error: profile.error.code }
+  return {
+    profile: profile.value,
+    rank: season.ok ? season.value.rank : null, // null when no season is active or the player has no entry
+    stats: stats.ok && stats.value ? stats.value.data : {},
+  }
+}
+```
+
+This function needs `profile.readPublic`, `liveOps.read`, `leaderboards.read`, and `gameState.read`. `gb cloudcode lint` does not infer the scopes or Game Table IDs that batch entries use: a file that calls `readBatch` gets an informational `READ_BATCH_SCOPES_NOT_INFERRED` note, and its unused-scope hints are off. Declare those scopes and `tableIds` in the manifest yourself. The Backend checks every entry when it runs, and `gb cloudcode test` applies the same per-entry argument, caller, scope, and table checks locally, so a missing scope shows up as a `FORBIDDEN` entry in a local test.
+
+- A result is `{ ok: true, value }` or `{ ok: false, error: { code, message } }`. Each read keeps its single-call checks and result, so a miss is still `{ ok: true, value: null }`. A denied or failed read fails only its own entry: for example `FORBIDDEN` for a missing service scope, `NOT_FOUND`, or `FUNCTION_SERVICE_UNAVAILABLE` when the Backend could not complete that read.
+- The values of one batch share a 448 KiB budget. A read whose value would exceed what is left fails with `FUNCTION_READ_BATCH_RESULT_TOO_LARGE`; earlier and later reads that fit still succeed. Read large values, such as big Game Tables, with their own call.
+- These reject the whole batch: a write method or `transaction` entry (`FUNCTION_READ_BATCH_READS_ONLY`), more than 16 calls (`FUNCTION_READ_BATCH_TOO_LARGE`), a malformed or unknown entry (`FUNCTION_READ_BATCH_INVALID`), and any use inside `services.transaction` (`FUNCTION_READ_BATCH_IN_TRANSACTION`). Inside a transaction, use the `tx` reads.
+- The reads run one after another in the Backend and do not share a snapshot. A batch saves the sandbox round trip per read; it issues the same database statements as the separate reads.
+
+`leaderboards.getRankForActiveEvent(eventKind, at, userId)` reads a rank in "the event of this kind that is active at `at`" in one call. It returns `{ event, rank, total, entry }`, the same as `liveOps.resolveActiveEvent(eventKind, at)` followed by `leaderboards.getRank(event.leaderboardId, userId)`. When no event of that kind is active, every field is `null`. When the player has no entry, `rank` and `entry` are `null` and `total` is still the board's entry count. It needs both `liveOps.read` and `leaderboards.read`, works as a direct call (`services.` or `tx.`) and inside `readBatch`, and a `player` caller can read only their own rank.
 
 ## Preview and deploy
 

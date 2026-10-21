@@ -22,6 +22,7 @@ These recipes are implemented as executable modules with assertion fixtures:
 | `upgrade.enhanceItem` | implemented | Run a success/fail enhancement roll drawn in the server sandbox (never from player input), apply success/compensation rewards atomically, and write upgrade state. |
 | `tutorial.claimReward` | implemented | Validate one-time tutorial step rewards, apply grants atomically, and write tutorial claim state. |
 | `gameState.incrementSharded` | implemented | Update one deterministic shard of game-owned private state with CAS. |
+| `profile.readCard` | implemented | Read-only: one `services.readBatch` call returns the caller's public profile, active-season rank (`leaderboards.getRankForActiveEvent`), and game-owned stats. |
 | Authoritative inventory mutation | covered by patterns | `crafting.craftItem`, `eventShop.purchase`, and `upgrade.enhanceItem` demonstrate `economy.transaction` and expected-version item updates; add a standalone recipe only if users need a simpler focused example. |
 | Fixture-based tests | implemented | Every module has `cloudcode/fixtures/<name>.json` using the `expect.result`, `expect.ops`, and `expect.opCount` envelope. |
 
@@ -44,6 +45,7 @@ gb cloudcode test --source gameops-cloudcode-cookbook/cloudcode battlePass.claim
 gb cloudcode test --source gameops-cloudcode-cookbook/cloudcode upgrade.enhanceItem --fixture gameops-cloudcode-cookbook/cloudcode/fixtures/upgrade.enhanceItem.json
 gb cloudcode test --source gameops-cloudcode-cookbook/cloudcode tutorial.claimReward --fixture gameops-cloudcode-cookbook/cloudcode/fixtures/tutorial.claimReward.json
 gb cloudcode test --source gameops-cloudcode-cookbook/cloudcode gameState.incrementSharded --fixture gameops-cloudcode-cookbook/cloudcode/fixtures/gameState.incrementSharded.json
+gb cloudcode test --source gameops-cloudcode-cookbook/cloudcode profile.readCard --fixture gameops-cloudcode-cookbook/cloudcode/fixtures/profile.readCard.json
 ```
 
 To deploy the pack into the current game profile:

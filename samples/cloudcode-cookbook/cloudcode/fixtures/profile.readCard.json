@@ -1,0 +1,19 @@
+{
+  "expect": {
+    "opCount": 0,
+    "ops": [],
+    "result": {
+      "ok": true,
+      "profile": {
+        "playerId": "usr_fixture"
+      },
+      "season": null,
+      "stats": {}
+    }
+  },
+  "input": {
+    "eventKind": "league.season"
+  },
+  "now": "2026-05-27T00:00:00.000Z",
+  "userId": "usr_fixture"
+}
