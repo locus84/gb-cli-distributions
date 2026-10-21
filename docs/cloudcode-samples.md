@@ -50,7 +50,7 @@ The complete fixture set covers:
 | `upgrade.enhanceItem` | atomic cost, server-drawn outcome, expected version | Resolve upgrade tables server-side and define auditable randomness. |
 | `tutorial.claimReward` | one-time step reward | Verify completion and prior claims server-side. |
 | `gameState.incrementSharded` | game-owned private state with CAS and deterministic shards | Resolve shard count and state keys server-side; do not use one hot document for high-write workloads. |
-| `profile.readCard` | read-only profile card from one `services.readBatch` call | Choose the competition event kind server-side and keep the batch to the reads the screen needs. |
+| `profile.readCard` | read-only profile card from one `services.readBatch` call | Choose the leaderboard key server-side and keep the batch to the reads the screen needs. |
 
 !!! warning "Examples are not anti-fraud policy"
     Fixture inputs intentionally make each example self-contained. A production player-callable function must not trust client-supplied balances, inventory, claim history, premium ownership, probability tables, reward definitions, timestamps, or progression state. Replace those inputs with authoritative reads or trusted server-triggered values.
@@ -78,29 +78,29 @@ An intentional game-domain rejection may throw an `Error` with a bounded upperca
 A function that only reads can send all of its reads in one service call with `services.readBatch(calls)`. Each call is `{ service, method, args }` for a read method that the manifest's `serviceScopes` allow. The batch resolves to one result per call, in the same order:
 
 ```js
-exports.default = async ({ userId, now, services }) => {
+exports.default = async ({ userId, services }) => {
   const [profile, season, stats] = await services.readBatch([
     { service: 'profile', method: 'getPublic', args: [userId] },
-    { service: 'leaderboards', method: 'getRankForActiveEvent', args: ['league.season', now, userId] },
+    { service: 'leaderboards', method: 'getRank', args: ['league.open', userId] },
     { service: 'gameState', method: 'get', args: ['profile-stats', userId] },
   ])
   if (!profile.ok) return { ok: false, error: profile.error.code }
   return {
     profile: profile.value,
-    rank: season.ok ? season.value.rank : null, // null when no season is active or the player has no entry
+    rank: season.ok ? season.value.rank : null, // null when the board has no current season or the player has no entry
     stats: stats.ok && stats.value ? stats.value.data : {},
   }
 }
 ```
 
-This function needs `profile.readPublic`, `liveOps.read`, `leaderboards.read`, and `gameState.read`. `gb cloudcode lint` does not infer the scopes or Game Table IDs that batch entries use: a file that calls `readBatch` gets an informational `READ_BATCH_SCOPES_NOT_INFERRED` note, and its unused-scope hints are off. Declare those scopes and `tableIds` in the manifest yourself. The Backend checks every entry when it runs, and `gb cloudcode test` applies the same per-entry argument, caller, scope, and table checks locally, so a missing scope shows up as a `FORBIDDEN` entry in a local test.
+This function needs `profile.readPublic`, `leaderboards.read`, and `gameState.read`. `gb cloudcode lint` does not infer the scopes or Game Table IDs that batch entries use: a file that calls `readBatch` gets an informational `READ_BATCH_SCOPES_NOT_INFERRED` note, and its unused-scope hints are off. Declare those scopes and `tableIds` in the manifest yourself. The Backend checks every entry when it runs, and `gb cloudcode test` applies the same per-entry argument, caller, scope, and table checks locally, so a missing scope shows up as a `FORBIDDEN` entry in a local test.
 
 - A result is `{ ok: true, value }` or `{ ok: false, error: { code, message } }`. Each read keeps its single-call checks and result, so a miss is still `{ ok: true, value: null }`. A denied or failed read fails only its own entry: for example `FORBIDDEN` for a missing service scope, `NOT_FOUND`, or `FUNCTION_SERVICE_UNAVAILABLE` when the Backend could not complete that read.
 - The values of one batch share a 448 KiB budget. A read whose value would exceed what is left fails with `FUNCTION_READ_BATCH_RESULT_TOO_LARGE`; earlier and later reads that fit still succeed. Read large values, such as big Game Tables, with their own call.
 - These reject the whole batch: a write method or `transaction` entry (`FUNCTION_READ_BATCH_READS_ONLY`), more than 16 calls (`FUNCTION_READ_BATCH_TOO_LARGE`), a malformed or unknown entry (`FUNCTION_READ_BATCH_INVALID`), and any use inside `services.transaction` (`FUNCTION_READ_BATCH_IN_TRANSACTION`). Inside a transaction, use the `tx` reads.
 - The reads run one after another in the Backend and do not share a snapshot. A batch saves the sandbox round trip per read; it issues the same database statements as the separate reads.
 
-`leaderboards.getRankForActiveEvent(eventKind, at, userId)` reads a rank in "the event of this kind that is active at `at`" in one call. It returns `{ event, rank, total, entry }`, the same as `liveOps.resolveActiveEvent(eventKind, at)` followed by `leaderboards.getRank(event.leaderboardId, userId)`. When no event of that kind is active, every field is `null`. When the player has no entry, `rank` and `entry` are `null` and `total` is still the board's entry count. It needs both `liveOps.read` and `leaderboards.read`, works as a direct call (`services.` or `tx.`) and inside `readBatch`, and a `player` caller can read only their own rank.
+`leaderboards.getRank(key, userId, { season })` reads the player's rank in a season of the board with that key: `current` (default; the started season that is not closed), `previous`, or a season id. It returns `{ seasonId, rank, total, entry }`; `rank` and `entry` are `null` when the player has no entry, and a board without that season fails the entry with `NOT_FOUND`. A `player` caller can read only their own rank.
 
 ## Preview and deploy
 
@@ -122,7 +122,7 @@ gb cloudcode call quest.progress \
   '{"questId":"daily_kill_10","eventName":"enemyKilled","amount":1,"target":10}'
 ```
 
-Game clients call a function by name without a version. The Backend then runs the latest enabled version, so a fixed version or a `gb cloudcode rollback` takes effect without a client release. A client that pins a version keeps running that code after a fix ships, and gets `409 FUNCTION_VERSION_REVOKED` once a rollback revokes it. Keep a function's input and output backward compatible; for a breaking change, add a new function name. Pin versions only in server-side bindings such as triggers and competitions, which operators can repoint immediately.
+Game clients call a function by name without a version. The Backend then runs the latest enabled version, so a fixed version or a `gb cloudcode rollback` takes effect without a client release. A client that pins a version keeps running that code after a fix ships, and gets `409 FUNCTION_VERSION_REVOKED` once a rollback revokes it. Keep a function's input and output backward compatible; for a breaking change, add a new function name. Pin versions only in server-side bindings such as triggers, which operators can repoint immediately.
 
 ## Transactions, conflicts, and replay
 

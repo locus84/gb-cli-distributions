@@ -12,7 +12,7 @@
     }
   },
   "input": {
-    "eventKind": "league.season"
+    "leaderboardKey": "league.season"
   },
   "now": "2026-05-27T00:00:00.000Z",
   "userId": "usr_fixture"

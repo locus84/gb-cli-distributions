@@ -22,7 +22,7 @@ These recipes are implemented as executable modules with assertion fixtures:
 | `upgrade.enhanceItem` | implemented | Run a success/fail enhancement roll drawn in the server sandbox (never from player input), apply success/compensation rewards atomically, and write upgrade state. |
 | `tutorial.claimReward` | implemented | Validate one-time tutorial step rewards, apply grants atomically, and write tutorial claim state. |
 | `gameState.incrementSharded` | implemented | Update one deterministic shard of game-owned private state with CAS. |
-| `profile.readCard` | implemented | Read-only: one `services.readBatch` call returns the caller's public profile, active-season rank (`leaderboards.getRankForActiveEvent`), and game-owned stats. |
+| `profile.readCard` | implemented | Read-only: one `services.readBatch` call returns the caller's public profile, current-season rank on a leaderboard key (`leaderboards.getRank`), and game-owned stats. |
 | Authoritative inventory mutation | covered by patterns | `crafting.craftItem`, `eventShop.purchase`, and `upgrade.enhanceItem` demonstrate `economy.transaction` and expected-version item updates; add a standalone recipe only if users need a simpler focused example. |
 | Fixture-based tests | implemented | Every module has `cloudcode/fixtures/<name>.json` using the `expect.result`, `expect.ops`, and `expect.opCount` envelope. |
 

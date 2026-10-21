@@ -263,14 +263,13 @@
         ],
         "serviceScopes": [
           "profile.readPublic",
-          "liveOps.read",
           "leaderboards.read",
           "gameState.read"
         ]
       },
       "metadata": {
         "displayName": "Profile Card Read Recipe",
-        "description": "Read the caller's public profile, active-season rank, and game-owned stats with one services.readBatch call.",
+        "description": "Read the caller's public profile, current-season leaderboard rank, and game-owned stats with one services.readBatch call.",
         "timeoutMs": 1000
       }
     }
