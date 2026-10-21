@@ -41,7 +41,7 @@ The complete fixture set covers:
 | --- | --- | --- |
 | `quest.progress` | progress document and completion reward | Read progress and quest definitions from authoritative state. |
 | `idle.claimOffline` | capped elapsed-time reward | Read the last claim and multipliers from authoritative state. |
-| `gacha.roll` | server-drawn weighted roll, pity, reward, analytics | Never accept weights, seed, roll values, pity, or ownership from a player; for CSPRNG draws over server-owned weights, roll a Game Table with `services.tables.roll(tableId)`; add regulatory/audit controls. |
+| `gacha.roll` | server-drawn weighted roll, pity, reward, analytics | Never accept weights, seed, roll values, pity, or ownership from a player; move the weights server-side, for example into a Game Table rolled with `services.tables.roll(tableId)`; add regulatory/audit controls. |
 | `crafting.craftItem` | atomic material spend and item grant | Resolve recipes server-side; do not accept arbitrary costs or outputs. |
 | `eventShop.purchase` | schedule and purchase-limit pattern | Resolve schedules, limits, prices, and rewards server-side. |
 | `attendance.claimDaily` | streak and daily reward | Read the calendar and prior claims from authoritative state. |
@@ -62,10 +62,13 @@ Every deployed module is declared in [`cloudcode/manifest.json`](https://github.
 - `roles` controls which authenticated role may invoke the function.
 - `scopes` controls the Cloud Code call capability.
 - `serviceScopes` controls which Backend operations the sandbox may read or execute. Reads are available from `services`; writes are available only from the `tx` object passed to `services.transaction`. `gameState.read` / `gameState.write` grant only game-scoped state access. Public snapshot/profile reads require `documents.readPublic` and `profile.readPublic`; premium-access checks require `iap.readEntitlements`. Use `documents.writePublic` only for `tx.documents.putPublic` / `patchPublic`, which create server-authored `player_public_readonly` snapshots.
+- `requiredUserTags` (optional, 1–16 unique tags matching `^[a-z][a-z0-9-]{0,31}$`) restricts the function to signed-in players of the game who hold every listed tag, for example a QA-only cheat function with `"requiredUserTags": ["qa"]`. Operators manage tags with `gb user tag add|remove|list <userId|publicCode> [tag]`. Any other caller gets `403 FUNCTION_USER_TAG_REQUIRED` before the function runs; admin/system callers, jobs and triggers are always rejected. Tags are read at call time, so a change applies to the next call without re-login. The handler sees the caller's tags as `ctx.userTags` (sorted, `[]` when none).
 - A module using `tables.read` must also declare its bounded `tableIds`. Read tables asynchronously with `await services.tables.get(id, version?)`; the parent pins one immutable snapshot per table/version for the invocation and reuses a bounded process cache after revalidating the enabled version, instead of injecting the game's full table catalog.
 - Remove every unused service scope when adapting a recipe.
 
 Uploaded modules execute as untrusted data in a restricted sandbox. They do not receive arbitrary filesystem, network, environment-variable, or process access.
+
+`Math.random()` in Cloud Code is a server CSPRNG: every call returns a uniform value in [0, 1) with 53 random bits from the Backend's cryptographic generator, so rolls cannot be rebuilt from the request time or repeated by invocations that start in the same millisecond. Function code cannot replace it (`Math.random` is read-only and non-configurable). The local `gb cloudcode test` runner uses the same generator. Draw rolls with `Math.random()` or `services.tables.roll(tableId)`, never from player input.
 
 Key lookups resolve `null` when the row does not exist: `gameState.get`, `documents.get` and `matchResults.getSettlement` (not settled yet). Other reads that need their target, such as `matchResults.get` for an unknown match, fail with `NOT_FOUND`.
 
@@ -122,7 +125,7 @@ gb cloudcode call quest.progress \
   '{"questId":"daily_kill_10","eventName":"enemyKilled","amount":1,"target":10}'
 ```
 
-Game clients call a function by name without a version. The Backend then runs the latest enabled version, so a fixed version or a `gb cloudcode rollback` takes effect without a client release. A client that pins a version keeps running that code after a fix ships, and gets `409 FUNCTION_VERSION_REVOKED` once a rollback revokes it. Keep a function's input and output backward compatible; for a breaking change, add a new function name. Pin versions only in server-side bindings such as triggers, which operators can repoint immediately.
+Game clients call a function by name without a version. The Backend then runs the latest enabled version, so a fixed version or a `gb cloudcode rollback` takes effect without a client release. A client that pins a version keeps running that code after a fix ships, and gets `409 FUNCTION_VERSION_REVOKED` once a rollback revokes it. Every call, pinned or not, must also satisfy the latest version's permissions, so a newer version's `roles` or `requiredUserTags` gate older versions too. Keep a function's input and output backward compatible; for a breaking change, add a new function name. Pin versions only in server-side bindings such as triggers, which operators can repoint immediately.
 
 ## Transactions, conflicts, and replay
 

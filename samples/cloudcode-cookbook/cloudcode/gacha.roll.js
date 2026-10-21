@@ -59,7 +59,7 @@ exports.default = async ({
     const pityThreshold = Math.max(0, Math.floor(positiveNumber(data.pityThreshold, 0)));
     const guaranteed = pityThreshold > 0 && pityBefore + 1 >= pityThreshold;
     const guaranteedEntry = entries.find(entry => entry && entry.guaranteed === true);
-    // The roll is drawn inside the server sandbox; never read it from player input.
+    // Math.random in Cloud Code is a server CSPRNG; never read the roll from player input.
     const selected = guaranteed && guaranteedEntry ? guaranteedEntry : pickWeighted(entries, Math.random());
     if (!selected) return {
       ok: false,

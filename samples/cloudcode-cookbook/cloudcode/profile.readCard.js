@@ -14,8 +14,8 @@ exports.default = async ({ input, userId, services }) => {
     { service: 'leaderboards', method: 'getRank', args: [leaderboardKey, userId] },
     { service: 'gameState', method: 'get', args: ['profile-stats', userId] },
   ]);
-  // Each entry succeeds or fails on its own (a board without a current season is NOT_FOUND);
-  // only the profile is required for a card.
+  // Each entry succeeds or fails on its own (an unknown board is NOT_FOUND; a board without a
+  // current season reads as rank null); only the profile is required for a card.
   if (!profile.ok) return { ok: false, error: profile.error.code };
   const ranked = season.ok && season.value && typeof season.value.rank === 'number' ? season.value : null;
   return {

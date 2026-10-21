@@ -37,7 +37,7 @@ exports.default = async ({
       maxLevel
     };
     const successRate = Math.max(0, Math.min(1, numberOr(data.successRate, 0)));
-    // The roll is drawn inside the server sandbox and recorded in the state below; never read it from player input.
+    // Math.random in Cloud Code is a server CSPRNG; the roll is recorded in the state below. Never read it from player input.
     const random = Math.random();
     const success = random < successRate;
     const levelAfter = success ? levelBefore + 1 : levelBefore;
